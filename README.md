@@ -3,7 +3,7 @@
 Dyami Watson - Team Lead - Organizing and leading team meetings and being the main point of communication with other teams. \
 Annabel Zhang - Technical Lead - Take the lead in formatting and creating design documents and organizing team tools. \
 Jason Chen - Developer - Coding, testing, and partaking in team assignments.\
-Bjourn Etienne - Developer-  Coding, testing, and partaking in team assignments.\
+Bjourn Etienne - Developer-  Coding, testing, and partaking in team assignments.
 
 
 ### Communication:
