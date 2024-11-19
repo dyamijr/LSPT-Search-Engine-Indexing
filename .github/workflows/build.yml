@@ -14,18 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up C++ Compiler
-      - name: Set up C++ environment
-        uses: lukka/setup-cpp@v1
-        with:
-          compiler: g++  # Specify the compiler (e.g., g++, clang, etc.)
-          architecture: x64
-
-      # Step 3: Install dependencies (if needed)
+      # Step 2: Install dependencies (if needed)
       - name: Install dependencies
-        run: sudo apt-get install -y cmake make libbson-dev libmongoc-dev  # Adjust based on your project
+        run: sudo apt-get install -y g++ cmake make libbson-dev libmongoc-dev  # Adjust based on your project
 
-      # Step 4: Build the project
+      # Step 3: Build the project
       - name: Build project
         run: |
           mkdir -p build
@@ -34,16 +27,16 @@ jobs:
           make
 
       # Uncomment after test done
-      # Step 5: Run tests (optional)
+      # Step 4: Run tests (optional)
       #- name: Run tests
       #  run: |
       #    cd build
       #    ctest --output-on-failure
 
-      # Step 6: check for common C++ issues.
+      # Step 5: check for common C++ issues.
       - name: Run clang-tidy
         run: clang-tidy src/*.cpp -- -std=c++17
 
-      # Step 7: Enforce consistent coding styles.
+      # Step 6: Enforce consistent coding styles.
       - name: Check formatting
         run: clang-format --dry-run --Werror src/*.cpp
