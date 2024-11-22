@@ -8,7 +8,7 @@ using namespace std;
 int main()
 {
     mongocxx::instance instance{}; // Initialize MongoDB driver
-    mongocxx::client client{mongocxx::uri{"mongodb+srv://dyamiwatsonjr:LSPTX@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT"}};
+    mongocxx::client client{mongocxx::uri{"mongodb+srv://<Username>:<password>@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT"}};
 
     auto db = client["IndexingDB"];
     auto index = db["indextable"];
