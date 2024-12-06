@@ -4,23 +4,13 @@
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
 #include <iostream>
+#include <mutex>
+
 using namespace std;
 
-auto findIndexAndDoc(auto indexTable, string index, string docId){
-    // Query the document by index and docId field
-    auto query = bsoncxx::builder::stream::document{}
-                 << "index" << index
-                 << "Documents.DocId" << docId
-                 << bsoncxx::builder::stream::finalize;
-
-    // Find the document
-    auto result = indexTable.find_one(query.view());
-    
-    return result; 
-}
-
-bool addIndex(auto dbClient, string index, string docId, int frequency, vector<int> positions){
+bool addIndex(string dbConnectionString, string index, string docId, int frequency, int position){
     // Step 1: Query to find the document with the given index and DocId
+    mongocxx::client dbClient = mongocxx::client{mongocxx::uri{dbConnectionString}};
     auto db = dbClient["IndexingDB"];
     auto indexTable = db["indextable"];
     //auto query = findIndexAndDoc(indexTable, index, docId);
@@ -32,12 +22,11 @@ bool addIndex(auto dbClient, string index, string docId, int frequency, vector<i
                  << bsoncxx::builder::stream::finalize;
     
     auto result = indexTable.find_one(query.view());
-    int pos = 0;
     //CHECK IF DOC AND INDEX EXIST
     if (result){
         bsoncxx::builder::stream::document update_builder;
         update_builder << "$push" << bsoncxx::builder::stream::open_document
-                        << "Documents.$.positions" << to_string(pos)  // Append new position
+                        << "Documents.$.positions" << to_string(position)  // Append new position
                         << bsoncxx::builder::stream::close_document;
         auto newResult = indexTable.update_one(query.view(), update_builder.view());
         if(newResult && newResult->matched_count() > 0){
@@ -56,7 +45,7 @@ bool addIndex(auto dbClient, string index, string docId, int frequency, vector<i
         new_doc_builder << "DocId" << docId  // New document ID
                         << "frequency" << frequency
                         << "positions" << bsoncxx::builder::stream::open_array
-                        << to_string(pos) // New positions
+                        << to_string(position) // New positions
                         << bsoncxx::builder::stream::close_array;
         bsoncxx::builder::stream::document update_builder;
         update_builder << "$push" << bsoncxx::builder::stream::open_document
@@ -76,7 +65,7 @@ bool addIndex(auto dbClient, string index, string docId, int frequency, vector<i
                       << "DocId" << docId
                       << "frequency" << frequency
                       << "positions" << bsoncxx::builder::stream::open_array
-                      << to_string(pos)
+                      << to_string(position)
                       << bsoncxx::builder::stream::close_array
                       << bsoncxx::builder::stream::close_document
                       << bsoncxx::builder::stream::close_array;
@@ -102,33 +91,3 @@ void removeDoc(auto dbClient, string docId){
     // Perform the update operation
     auto result = indexTable.update_many({}, update.view());
 }
-
-mongocxx::client connectToDatabase(string dbConnectionString){
-    mongocxx::instance instance{}; // Initialize MongoDB driver
-    mongocxx::client client{mongocxx::uri{dbConnectionString}};
-    return client;
-}
-
-/*
-int main()
-{
-    mongocxx::instance instance{}; // Initialize MongoDB driver
-    mongocxx::client client{mongocxx::uri{"mongodb+srv://<Username>:<password>@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT"}};
-
-    auto db = client["IndexingDB"];
-    auto index = db["indextable"];
-    auto docs = db["documentmetada"];
-
-    // Insert a document
-    bsoncxx::builder::stream::document document{};
-    document << "name" << "John Doe" << "age" << 30;
-    collection.insert_one(document.view());
-
-    // Retrieve documents
-    auto cursor = collection.find({});
-    for (auto&& doc : cursor) {
-        std::cout << bsoncxx::to_json(doc) << std::endl;
-    }
-
-    return 0;
-}*/

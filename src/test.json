@@ -1,0 +1,43 @@
+{
+    "name" : "Geek",
+    "age" : 49,
+    "tokens" : [
+        {
+            "token" : "cat",
+            "lemma" : "string",
+            "frequency" : 3,
+            "position" : 0
+        },
+        {
+            "token" : "cat",
+            "lemma" : "string2",
+            "frequency" : 3,
+            "position" : 1
+        },
+        {
+            "token" : "dog",
+            "lemma" : "string2",
+            "frequency" : 2,
+            "position" : 2
+        },
+        {
+            "token" : "tree",
+            "lemma" : "string2",
+            "frequency" : 1,
+            "position" : 3
+        },
+        {
+            "token" : "dog",
+            "lemma" : "string2",
+            "frequency" : 2,
+            "position" : 4
+        },
+        {
+            "token" : "cat",
+            "lemma" : "string2",
+            "frequency" : 3,
+            "position" : 5
+        }
+
+    ]
+}

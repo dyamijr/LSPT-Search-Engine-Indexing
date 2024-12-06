@@ -13,23 +13,6 @@ using namespace std;
 
 /* 
 *   Function Name:
-*       findIndexAndDoc
-*   Description: 
-*       searches the index table for a specific index and document id 
-*   Parameters:
-*       indexTable - auto - indexTable we will be querying
-*       index - string - index we will be searching for
-*       docId - string - documentId we are searching for
-*   Returns:
-*       auto - returns the object corresponding to the index and docId or nothing
-*   Example Usages:
-*       findIndexAndDoc(indexTable, "cat", "1234") = 
-*           {"_id":"67414a67e552bc8d46410fdf","index":"cat","Documents":[{"DocId":"1234","frequency":"2","positions":[10,15]}]}
-*/
-auto findIndexAndDoc(auto indexTable, string index, string docId);
-
-/* 
-*   Function Name:
 *       addIndex
 *   Description: 
 *       Attempts to create a link between a document and an index. If a link between the 
@@ -50,7 +33,7 @@ auto findIndexAndDoc(auto indexTable, string index, string docId);
 *   Example Usages:
 *       addIndex(IndexingClient, "cat", "1234", 5, {1,6,12,25,80})
 */
-void addIndex(auto dbClient, string index, string docId, int frequency, vector<int> positions);
+bool addIndex(string dbConnectionString, string index, string docId, int frequency, int positions);
 
 /* 
 *   Function Name:
@@ -68,23 +51,6 @@ void addIndex(auto dbClient, string index, string docId, int frequency, vector<i
 *       addIndex(IndexingClient, "cat", "1234", 5, {1,6,12,25,80})
 */
 void removeDoc(auto dbClient, string docId);
-
-/* 
-*   Function Name:
-*       connectToDatabase
-*   Description: 
-*       Given a Connection String returns the client associated with the database
-*   Parameters:
-*       dbConnectionString - string - a connection string to connect to the dataabse 
-*           (eg. mongodb+srv://<db_username>:<db_password>@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=<db_appname>)
-*   Returns:
-*       the connected client
-*   Side Effects:
-*       an open connection to the specified dataabase
-*   Example Usages:
-*       connectToDatabase("mongodb+srv:...") = IndexingClient
-*/
-mongocxx::client connectToDatabase(string dbConnectionString);
 
 #endif // DATABASE_H
 

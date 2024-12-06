@@ -1,20 +1,20 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
+#include "database.h"
+#include <mongocxx/client.hpp>
 using namespace std;
 #include "nlohmann/json.hpp"
 
 // map<string, set<string>> invertedIndex;
 
-
+using json = nlohmann::json;
 // main func
-std::string addToIndex (std::string doc_ID){
-
-    auto doc_dbClient = connectToDatabase("329382098");
-    auto index_dbClient = connectToDatabase("232323");
-
+std::string addToIndexsd (std::string doc_ID){
+    string connect = "mongodb+srv://dyamiwatsonjr:LSPTTeamx@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT";
     // json object token
-    auto tokens = find (doc_dbClient, doc_id);
+    //auto tokens = find (doc_dbClient, doc_id);
 
 
     // Validate input
@@ -24,47 +24,37 @@ std::string addToIndex (std::string doc_ID){
 
     /*query database for id*/
     /*determine if update entry or new entry*/
-
-
-    using json = nlohmann::json;
-    std::ifstream file("test.json");
-    json j;
-    file >> j;
-
-    std::cout << j["name"] << std::endl;
-    std::cout << j["age"] << std::endl;
-    std::cout << j["tokens"][0]["frequency"] << std::endl;
-
-
-    string index;
-    int frequency = j["tokens"][0]["frequency"];
-    std::vector <int> positions = 
-
-
-    addIndex(index_dbClient, string index, string docId, int frequency, vector<int> positions);
-    //INDEXING ALGO
-
-    // update
-        // remove old index entry
-
-
-    // create inverted index array  [cat] --> ID1, ID2, ID3
     
+    //ToDO: read in data from dds database
+    //TODO: handle metadata
 
-    // save entry to database
+    
+    std::ifstream file("../src/test.json");
+    json tokenList;
+    file >> tokenList;
 
+    for (auto token : tokenList["tokens"]){
+        string index = token["token"];
+        int frequency = token["frequency"];
+        int position = token["position"];
+        std::cout << index << std::endl;
+        std::cout << frequency << std::endl;
+        std::cout << position <<"\n"  << std::endl;
+        addIndex(connect, index, doc_ID, frequency, position);
+    }
+    return "";
 }
 
-
+/*
 // main func
 int getAverageDocLength(){
     //return average as integer
-    int avg_len = calc_avg_length ();
-    avg_len = 0; 
+    //int avg_len = calc_avg_length ();
+    int avg_len = 0; 
     return avg_len;
 }
 
-std::vector <int> getDocLengths (void){
+/*std::vector <int> getDocLengths (void){
     // query database for all doc lengths
 
 
@@ -83,5 +73,5 @@ int calc_avg_length (){
     int average_len = sum_lengths / num_docs;
 
 
-    return 
-}
+    return 0;
+}*/
