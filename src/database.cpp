@@ -15,7 +15,7 @@ int main()
     auto docs = db["documentmetada"];
 
     auto testdb = client["testdb"];
-    auto collection = testdb["testcollection"]
+    auto collection = testdb["testcollection"];
 
     // Insert a document
     bsoncxx::builder::stream::document document{};
