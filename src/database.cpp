@@ -14,6 +14,9 @@ int main()
     auto index = db["indextable"];
     auto docs = db["documentmetada"];
 
+    auto testdb = client["testdb"];
+    auto collection = testdb["testcollection"]
+
     // Insert a document
     bsoncxx::builder::stream::document document{};
     document << "name" << "John Doe" << "age" << 30;
