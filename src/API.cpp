@@ -24,7 +24,7 @@ int main() {
 
         auto json_body = crow::json::load(req.body);
 
-        if (!json_body) {
+        if (!json_body || !json_body.has("doc_ID") || !json_body.has("operation") || !json_body.has("timestamp")) {
             return crow::response(400, "Invalid JSON");
         }
 
@@ -79,6 +79,7 @@ int main() {
         crow::json::wvalue response_body;
         
         try {
+            response_body["recieved_index"] = index_ID;
             return crow::response(202, response_body);
             /*auto documents = getDocsFromIndex(index_ID);
 
@@ -113,6 +114,7 @@ int main() {
         crow::json::wvalue response_body;
 
         try {
+            response_body["received_doc_ID"] = doc_ID;
             return crow::response(202, response_body);
             /*auto metadata = getDocumentMetaData(doc_ID); 
 
@@ -136,6 +138,7 @@ int main() {
         crow::json::wvalue response_body;
         
         try {
+            response_body["average_length"] = "0"
             return crow::response(202, response_body);
             /*int average_length = getAverageDocLength(); 
 
