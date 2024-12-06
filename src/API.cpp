@@ -36,7 +36,7 @@ int main() {
             std::string timestamp = json_body["timestamp"].s();
 
             // Call the pingIndex function from func.cpp
-            bool success = pingIndex(doc_ID, operation, timestamp);
+            bool success = true;//pingIndex(doc_ID, operation, timestamp);
 
             {
                 std::lock_guard<std::mutex> lock(data_mutex);
@@ -78,7 +78,7 @@ int main() {
         crow::json::wvalue response_body;
         
         try {
-            auto documents = getDocsFromIndex(index_ID);
+            auto documents = []; //getDocsFromIndex(index_ID);
 
             if (documents.empty()) {
                 return crow::response(404, "Index not found");
