@@ -5,7 +5,7 @@
 #include <iostream>
 using namespace std;
 
-int main()
+int testFunc()
 {
     mongocxx::instance instance{}; // Initialize MongoDB driver
     mongocxx::client client{mongocxx::uri{"mongodb+srv://<Username>:<password>@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT"}};
