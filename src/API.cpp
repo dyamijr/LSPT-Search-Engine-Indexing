@@ -53,8 +53,9 @@ int main() {
                 response_body["received_operation"] = operation;
                 response_body["received_timestamp"] = timestamp;
                 response_body["message"] = "Ping operation processed successfully";
-
-                return crow::response(200, response_body);
+                
+                return crow::response(202, response_body);
+                //return crow::response(200, response_body);
             }
 
         }
@@ -78,7 +79,8 @@ int main() {
         crow::json::wvalue response_body;
         
         try {
-            auto documents = []; //getDocsFromIndex(index_ID);
+            return crow::response(202, response_body);
+            /*auto documents = getDocsFromIndex(index_ID);
 
             if (documents.empty()) {
                 return crow::response(404, "Index not found");
@@ -90,7 +92,7 @@ int main() {
             }
 
             response_body["documents"] = docs_json;
-            return crow::response(200, response_body);
+            return crow::response(200, response_body);*/
         }
         
         catch (const std::exception& e) {
@@ -111,14 +113,15 @@ int main() {
         crow::json::wvalue response_body;
 
         try {
-            auto metadata = getDocumentMetaData(doc_ID); 
+            return crow::response(202, response_body);
+            /*auto metadata = getDocumentMetaData(doc_ID); 
 
             if (metadata.empty()) {
                 return crow::response(404, "Document metadata not found");
             }
 
             response_body["metadata"] = metadata;
-            return crow::response(200, response_body);
+            return crow::response(200, response_body);*/
         }
         
         catch (const std::exception& e) {
@@ -133,10 +136,11 @@ int main() {
         crow::json::wvalue response_body;
         
         try {
-            int average_length = getAverageDocLength(); 
+            return crow::response(202, response_body);
+            /*int average_length = getAverageDocLength(); 
 
             response_body["average_length"] = average_length;
-            return crow::response(200, response_body);
+            return crow::response(200, response_body);*/
         }
 
         catch (const std::exception& e) {
