@@ -138,7 +138,7 @@ int main() {
         crow::json::wvalue response_body;
         
         try {
-            response_body["average_length"] = "0"
+            response_body["average_length"] = "0";
             return crow::response(202, response_body);
             /*int average_length = getAverageDocLength(); 
 
