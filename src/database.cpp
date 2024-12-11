@@ -121,7 +121,8 @@ bool addToIndex(string doc_ID) {
         bsoncxx::array::view tokenList = transformedData["tokens"].get_array().value;
         for (auto&& token : tokenList) {
             auto tokenView = token.get_document().view();
-            string index = tokenView["token"].get_utf8().value.to_string();
+            core::v1::string_view view = tokenView["token"].get_string();
+            string index(view.data(), view.size());
             int frequency = tokenView["frequency"].get_int32().value;
             int position = tokenView["position"].get_int32().value;
             addIndexToDatabase(connect, index, doc_ID, to_string(frequency), to_string(position));
@@ -130,7 +131,11 @@ bool addToIndex(string doc_ID) {
         for (auto&& bigram : bigrams) {
             auto bigramView = bigram.get_document().view();
             bsoncxx::array::view bigramArray = bigramView["bigram"].get_array().value;
-            string indexTerm = bigramArray[0].get_utf8().value.to_string() + bigramArray[1].get_utf8().value.to_string();
+            core::v1::string_view view1 = bigramArray[0].get_string();
+            core::v1::string_view view2 = bigramArray[1].get_string();
+            string bigram1(view1.data(), view1.size());
+            string bigram2(view2.data(), view2.size());
+            string indexTerm = bigram1 + bigram2;
             int frequency = bigramView["frequency"].get_int32().value;
             addIndexToDatabase(connect, indexTerm, doc_ID, to_string(frequency), "");
         }
@@ -138,8 +143,13 @@ bool addToIndex(string doc_ID) {
         for (auto&& trigram : trigrams) {
             auto trigramView = trigram.get_document().view();
             bsoncxx::array::view trigramArray = trigramView["trigram"].get_array().value;
-            string indexTerm = trigramArray[0].get_utf8().value.to_string() + trigramArray[1].get_utf8().value.to_string()
-                                + trigramArray[2].get_utf8().value.to_string();
+            core::v1::string_view view1 = trigramArray[0].get_string();
+            core::v1::string_view view2 = trigramArray[1].get_string();
+            core::v1::string_view view3 = trigramArray[2].get_string();
+            string trigram1(view1.data(), view1.size());
+            string trigram2(view2.data(), view2.size());
+            string trigram3(view3.data(), view3.size());
+            string indexTerm = trigram1 + trigram2 + trigram3;
             int frequency = trigramView["frequency"].get_int32().value;
             addIndexToDatabase(connect, indexTerm, doc_ID, to_string(frequency), "");
         }
