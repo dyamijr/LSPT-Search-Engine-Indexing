@@ -210,3 +210,85 @@ bool updateIndex(string doc_ID) {
         return false;
     }
 }
+
+
+auto getDocsFromIndex(string index_ID) {
+    // Step 1: Validate Input
+    if (index_ID.empty()) {
+        cerr << "Invalid input: index_ID is empty." << endl;
+        return bsoncxx::v_noabi::document::view();
+    }
+    mongocxx::client dbClient{mongocxx::uri{"mongodb+srv://dyamiwatsonjr:LSPTTeamx@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT"}};
+    
+    // Connect to database and collection
+    auto db = dbClient["IndexingDB"];
+    auto indexTable = db["indextable"];
+
+    try {
+        // Step 2: Retrieve Documents by Index ID
+        // Query for the specified index_ID
+        auto query = bsoncxx::builder::stream::document{} << "index" << index_ID << bsoncxx::builder::stream::finalize;
+        auto result = indexTable.find_one(query.view());
+        auto data = result->view();
+        return data;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return bsoncxx::v_noabi::document::view(); // Return empty JSON on error
+    }
+}
+
+// main func
+int getAverageDocLength(){
+    //return average as integer
+    int avg_len = calc_avg_length();
+    avg_len = 0; 
+    return avg_len;
+}
+
+std::vector <int> getDocLengths (){
+    // query database for all doc lengths
+    string connect = "mongodb+srv://dyamiwatsonjr:LSPTTeamx@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT";
+    mongocxx::client dbClient = mongocxx::client{mongocxx::uri{connect}};
+    auto db = dbClient["IndexingDB"];
+    auto metadata = db["metadata"];
+
+    // Query the collection
+    auto cursor = metadata.find({});
+
+    // Vector to store the lengths
+    std::vector<int> document_lengths;
+
+    // Iterate through the results
+    for (const auto& doc : cursor) {
+        if (doc["total_length"].type() == bsoncxx::type::k_int32) {
+            document_lengths.push_back(doc["total_length"].get_int32().value);
+        } else if (doc["total_length"].type() == bsoncxx::type::k_int64) {
+            document_lengths.push_back(static_cast<int>(doc["total_length"].get_int64().value));
+        } else {
+            std::cerr << "Unexpected data type for 'total_length' in document: " << bsoncxx::to_json(doc) << std::endl;
+        }
+    }
+
+    return document_lengths;
+}
+
+int calc_avg_length (){
+
+    std::vector <int> total_lengths = getDocLengths ();
+    
+    int sum_lengths = 0;
+    for (int i = 0; i < total_lengths.size(); i++){
+        sum_lengths += total_lengths[i];
+    }
+
+    int num_docs = total_lengths.size();
+    int average_len = sum_lengths / num_docs;
+
+
+    return average_len;
+}
+
+std::vector <int> getDocumentMetaData(const std::string& doc_ID) {
+    return getDocLengths();
+}

@@ -95,5 +95,11 @@ bool removeFromIndex(string doc_ID);
 *       updateIndex("1234") = true
 */
 bool updateIndex(string doc_ID);
+auto getDocsFromIndex(string index_ID);
+int calc_avg_length();
+std::vector <int> getDocLengths();
+int getAverageDocLength();
+
+
 #endif // DATABASE_H
 
