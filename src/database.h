@@ -48,7 +48,7 @@ bool pingIndex(string doc_ID, string operation);
 *   Example Usages:
 *       addIndex(IndexingClient, "cat", "1234", 5, {1,6,12,25,80})
 */
-bool addIndex(string dbConnectionString, string index, string docId, string frequency, string positions);
+bool addIndex(string dbConnectionString, bsoncxx::types::b_string index, string docId, string frequency, string positions);
 
 /* 
 *   Function Name:

@@ -4,6 +4,7 @@
 #include <mongocxx/instance.hpp>
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/types.hpp>
 #include <iostream>
 
 using namespace std;
@@ -20,7 +21,7 @@ bool pingIndex(string doc_ID, string operation){
     }
 }
 
-bool addIndexToDatabase(string dbConnectionString, string index, string docId, string frequency, string position){
+bool addIndexToDatabase(string dbConnectionString, auto index, string docId, string frequency, string position){
     // Step 1: Query to find the document with the given index and DocId
     mongocxx::client dbClient = mongocxx::client{mongocxx::uri{dbConnectionString}};
     auto db = dbClient["IndexingDB"];
@@ -121,8 +122,7 @@ bool addToIndex(string doc_ID) {
         bsoncxx::array::view tokenList = transformedData["tokens"].get_array().value;
         for (auto&& token : tokenList) {
             auto tokenView = token.get_document().view();
-            core::v1::string_view view = tokenView["token"].get_string();
-            string index(view.data(), view.size());
+            auto index = tokenView["token"].get_string();
             int frequency = tokenView["frequency"].get_int32().value;
             int position = tokenView["position"].get_int32().value;
             addIndexToDatabase(connect, index, doc_ID, to_string(frequency), to_string(position));
@@ -130,28 +130,23 @@ bool addToIndex(string doc_ID) {
         bsoncxx::array::view bigrams = transformedData["bigrams"].get_array().value;
         for (auto&& bigram : bigrams) {
             auto bigramView = bigram.get_document().view();
-            bsoncxx::array::view bigramArray = bigramView["bigram"].get_array().value;
-            core::v1::string_view view1 = bigramArray[0].get_string();
-            core::v1::string_view view2 = bigramArray[1].get_string();
-            string bigram1(view1.data(), view1.size());
-            string bigram2(view2.data(), view2.size());
-            string indexTerm = bigram1 + bigram2;
+            auto bigramArray = bigramView["bigram"].get_array().value;
+            //auto bigram1 = bigramArray[0].get_string();
+            //auto bigram2 = bigramArray[1].get_string();
+            //auto indexTerm = bigram1 + bigram2;
             int frequency = bigramView["frequency"].get_int32().value;
-            addIndexToDatabase(connect, indexTerm, doc_ID, to_string(frequency), "");
+            addIndexToDatabase(connect, bigramArray, doc_ID, to_string(frequency), "");
         }
         bsoncxx::array::view trigrams = transformedData["trigrams"].get_array().value;
         for (auto&& trigram : trigrams) {
             auto trigramView = trigram.get_document().view();
-            bsoncxx::array::view trigramArray = trigramView["trigram"].get_array().value;
-            core::v1::string_view view1 = trigramArray[0].get_string();
-            core::v1::string_view view2 = trigramArray[1].get_string();
-            core::v1::string_view view3 = trigramArray[2].get_string();
-            string trigram1(view1.data(), view1.size());
-            string trigram2(view2.data(), view2.size());
-            string trigram3(view3.data(), view3.size());
-            string indexTerm = trigram1 + trigram2 + trigram3;
+            auto trigramArray = trigramView["trigram"].get_array().value;
+            //auto trigram1 = trigramArray[0].get_string();
+            //auto trigram2 = trigramArray[1].get_string();
+            //auto trigram3 = trigramArray[2].get_string();
+            //auto indexTerm = trigram1.value + trigram2.value + trigram3.value;
             int frequency = trigramView["frequency"].get_int32().value;
-            addIndexToDatabase(connect, indexTerm, doc_ID, to_string(frequency), "");
+            addIndexToDatabase(connect, trigramArray, doc_ID, to_string(frequency), "");
         }
         bsoncxx::builder::stream::document metadata_builder;
         metadata_builder << "DocId" << doc_ID
