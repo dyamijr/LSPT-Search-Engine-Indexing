@@ -25,7 +25,7 @@ using namespace std;
 *   Example Usages:
 *       pingIndex("1234", "add");
 */
-bool pingIndex(string doc_ID, string operation);
+bool pingIndex(const string& doc_ID, const string& operation);
 /* 
 *   Function Name:
 *       addIndex
@@ -48,7 +48,7 @@ bool pingIndex(string doc_ID, string operation);
 *   Example Usages:
 *       addIndex(IndexingClient, "cat", "1234", 5, {1,6,12,25,80})
 */
-bool addIndex(string dbConnectionString, bsoncxx::types::b_string index, string docId, string frequency, string positions);
+bool addIndexToDatabase(const string& dbConnectionString, const auto& index, const string& docId, const string& frequency, const string& position);
 
 /* 
 *   Function Name:
@@ -64,7 +64,7 @@ bool addIndex(string dbConnectionString, bsoncxx::types::b_string index, string 
 *   Example Usages:
 *       addToIndex("1234") = true
 */
-bool addToIndex(string doc_ID);
+bool addToIndex(const string& doc_ID);
 /* 
 *   Function Name:
 *       removeFromIndex
@@ -79,7 +79,7 @@ bool addToIndex(string doc_ID);
 *   Example Usages:
 *       removeFromIndex("1234") = true
 */
-bool removeFromIndex(string doc_ID);
+bool removeFromIndex(const string& doc_ID);
 /* 
 *   Function Name:
 *       updateIndex
@@ -94,12 +94,67 @@ bool removeFromIndex(string doc_ID);
 *   Example Usages:
 *       updateIndex("1234") = true
 */
-bool updateIndex(string doc_ID);
-auto getDocsFromIndex(string index_ID);
-int calc_avg_length();
-std::vector <int> getDocLengths();
-int getAverageDocLength();
-
+bool updateIndex(const string& doc_ID);
+/* 
+*   Function Name:
+*       getDocsFromIndex
+*   Description: 
+*       Attempts to retrive all associated documents from an index.
+*   Parameters:
+*       index_ID - an index
+*   Returns:
+*       auto - all associated documents from an index.
+*   Side Effects:
+*       none
+*   Example Usages:
+*       getDocsFromIndex("word") = {"1234", "234"}
+*/
+auto getDocsFromIndex(const string& index_ID);
+/* 
+*   Function Name:
+*       getDocLengths
+*   Description: 
+*       Returns document lengths of all indexed documents.
+*   Parameters:
+*       none 
+*   Returns:
+*       vector<int> - lengths of all indexed documents. 
+*   Side Effects:
+*       none
+*   Example Usages:
+*       getDocLengths() = {10, 50, 5, 287382, 9}
+*/
+vector<int> getDocLengths();
+/* 
+*   Function Name:
+*       calcAvgLength
+*   Description: 
+*       Returns average lengths of all indexed documents.
+*   Parameters:
+*       none 
+*   Returns:
+*       int - average lengths of all indexed documents. 
+*   Side Effects:
+*       none
+*   Example Usages:
+*       calcAvgLength() = 1234
+*/
+int calcAvgLength();
+/* 
+*   Function Name:
+*       getDocumentMetaData
+*   Description: 
+*       Returns document metadata of all indexed documents. At this point only metadata field is length.
+*   Parameters:
+*       none 
+*   Returns:
+*       vector<int> - lengths of all indexed documents. 
+*   Side Effects:
+*       none
+*   Example Usages:
+*       getDocumentMetaData() = {10, 50, 5, 287382, 9}
+*/
+vector<int> getDocumentMetaData(const string& doc_ID);
 
 #endif // DATABASE_H
 

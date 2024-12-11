@@ -9,7 +9,7 @@
 
 using namespace std;
 
-bool pingIndex(string doc_ID, string operation){
+bool pingIndex(const string& doc_ID, const string& operation){
     if(operation == "add"){
         return addToIndex(doc_ID);
     } else if (operation == "remove"){
@@ -21,7 +21,7 @@ bool pingIndex(string doc_ID, string operation){
     }
 }
 
-bool addIndexToDatabase(string dbConnectionString, auto index, string docId, string frequency, string position){
+bool addIndexToDatabase(const string& dbConnectionString, const auto& index, const string& docId, const string& frequency, const string& position){
     // Step 1: Query to find the document with the given index and DocId
     mongocxx::client dbClient = mongocxx::client{mongocxx::uri{dbConnectionString}};
     auto db = dbClient["IndexingDB"];
@@ -89,7 +89,7 @@ bool addIndexToDatabase(string dbConnectionString, auto index, string docId, str
     return false;
 }
 
-bool addToIndex(string doc_ID) {
+bool addToIndex(const string& doc_ID) {
     if (doc_ID.empty()) {
         cerr << "Invalid input: doc_ID is empty." << endl;
         return false;
@@ -161,7 +161,7 @@ bool addToIndex(string doc_ID) {
     }
 }
 
-bool removeFromIndex(string doc_ID) {
+bool removeFromIndex(const string& doc_ID) {
     // Step 1: Connect to the database and collection
     string connect = "mongodb+srv://dyamiwatsonjr:LSPTTeamx@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT";
     mongocxx::client dbClient = mongocxx::client{mongocxx::uri{connect}};
@@ -197,7 +197,7 @@ bool removeFromIndex(string doc_ID) {
     
 }
 
-bool updateIndex(string doc_ID) {
+bool updateIndex(const string& doc_ID) {
     try{
         // Attempts to remove data and if no errors occur re add the document
         bool remove = removeFromIndex(doc_ID);
@@ -212,7 +212,7 @@ bool updateIndex(string doc_ID) {
 }
 
 
-auto getDocsFromIndex(string index_ID) {
+auto getDocsFromIndex(const string& index_ID) {
     // Step 1: Validate Input
     if (index_ID.empty()) {
         cerr << "Invalid input: index_ID is empty." << endl;
@@ -238,15 +238,7 @@ auto getDocsFromIndex(string index_ID) {
     }
 }
 
-// main func
-int getAverageDocLength(){
-    //return average as integer
-    int avg_len = calc_avg_length();
-    avg_len = 0; 
-    return avg_len;
-}
-
-std::vector <int> getDocLengths (){
+vector<int> getDocLengths(){
     // query database for all doc lengths
     string connect = "mongodb+srv://dyamiwatsonjr:LSPTTeamx@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT";
     mongocxx::client dbClient = mongocxx::client{mongocxx::uri{connect}};
@@ -273,7 +265,7 @@ std::vector <int> getDocLengths (){
     return document_lengths;
 }
 
-int calc_avg_length (){
+int calcAvgLength(){
 
     std::vector <int> total_lengths = getDocLengths ();
     
@@ -289,6 +281,6 @@ int calc_avg_length (){
     return average_len;
 }
 
-std::vector <int> getDocumentMetaData(const std::string& doc_ID) {
+vector<int> getDocumentMetaData(const string& doc_ID) {
     return getDocLengths();
 }

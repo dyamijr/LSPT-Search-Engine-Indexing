@@ -6,10 +6,10 @@
 #include <string>
 #include <mutex>
 
+using namespace std;
+
 // Simulated in-memory data storage
-std::unordered_map<std::string, std::unordered_map<std::string, std::string>> index_data; // index_ID -> {doc_ID -> content}
-std::unordered_map<std::string, std::string> document_metadata; // doc_ID -> metadata
-std::mutex data_mutex; // Ensures thread safety
+mutex data_mutex; // Ensures thread safety
 
 int main() {
     crow::SimpleApp app;
