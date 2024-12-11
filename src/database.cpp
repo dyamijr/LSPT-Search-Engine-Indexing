@@ -4,12 +4,24 @@
 #include <mongocxx/instance.hpp>
 #include <bsoncxx/json.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
+#include <bsoncxx/types.hpp>
 #include <iostream>
 
 using namespace std;
 
+bool pingIndex(const string& doc_ID, const string& operation){
+    if(operation == "add"){
+        return addToIndex(doc_ID);
+    } else if (operation == "remove"){
+        return removeFromIndex(doc_ID);
+    } else if (operation == "update"){
+        return updateIndex(doc_ID);
+    } else {
+        return false;
+    }
+}
 
-bool addIndexToDatabase(string dbConnectionString, string index, string docId, string frequency, string position){
+bool addIndexToDatabase(const string& dbConnectionString, const auto& index, const string& docId, const string& frequency, const string& position){
     // Step 1: Query to find the document with the given index and DocId
     mongocxx::client dbClient = mongocxx::client{mongocxx::uri{dbConnectionString}};
     auto db = dbClient["IndexingDB"];
@@ -77,7 +89,7 @@ bool addIndexToDatabase(string dbConnectionString, string index, string docId, s
     return false;
 }
 
-bool addToIndex(string doc_ID) {
+bool addToIndex(const string& doc_ID) {
     if (doc_ID.empty()) {
         cerr << "Invalid input: doc_ID is empty." << endl;
         return false;
@@ -110,7 +122,7 @@ bool addToIndex(string doc_ID) {
         bsoncxx::array::view tokenList = transformedData["tokens"].get_array().value;
         for (auto&& token : tokenList) {
             auto tokenView = token.get_document().view();
-            string index = tokenView["token"].get_utf8().value.to_string();
+            auto index = tokenView["token"].get_string();
             int frequency = tokenView["frequency"].get_int32().value;
             int position = tokenView["position"].get_int32().value;
             addIndexToDatabase(connect, index, doc_ID, to_string(frequency), to_string(position));
@@ -118,19 +130,23 @@ bool addToIndex(string doc_ID) {
         bsoncxx::array::view bigrams = transformedData["bigrams"].get_array().value;
         for (auto&& bigram : bigrams) {
             auto bigramView = bigram.get_document().view();
-            bsoncxx::array::view bigramArray = bigramView["bigram"].get_array().value;
-            string indexTerm = bigramArray[0].get_utf8().value.to_string() + bigramArray[1].get_utf8().value.to_string();
+            auto bigramArray = bigramView["bigram"].get_array().value;
+            //auto bigram1 = bigramArray[0].get_string();
+            //auto bigram2 = bigramArray[1].get_string();
+            //auto indexTerm = bigram1 + bigram2;
             int frequency = bigramView["frequency"].get_int32().value;
-            addIndexToDatabase(connect, indexTerm, doc_ID, to_string(frequency), "");
+            addIndexToDatabase(connect, bigramArray, doc_ID, to_string(frequency), "");
         }
         bsoncxx::array::view trigrams = transformedData["trigrams"].get_array().value;
         for (auto&& trigram : trigrams) {
             auto trigramView = trigram.get_document().view();
-            bsoncxx::array::view trigramArray = trigramView["trigram"].get_array().value;
-            string indexTerm = trigramArray[0].get_utf8().value.to_string() + trigramArray[1].get_utf8().value.to_string()
-                                + trigramArray[2].get_utf8().value.to_string();
+            auto trigramArray = trigramView["trigram"].get_array().value;
+            //auto trigram1 = trigramArray[0].get_string();
+            //auto trigram2 = trigramArray[1].get_string();
+            //auto trigram3 = trigramArray[2].get_string();
+            //auto indexTerm = trigram1.value + trigram2.value + trigram3.value;
             int frequency = trigramView["frequency"].get_int32().value;
-            addIndexToDatabase(connect, indexTerm, doc_ID, to_string(frequency), "");
+            addIndexToDatabase(connect, trigramArray, doc_ID, to_string(frequency), "");
         }
         bsoncxx::builder::stream::document metadata_builder;
         metadata_builder << "DocId" << doc_ID
@@ -145,7 +161,7 @@ bool addToIndex(string doc_ID) {
     }
 }
 
-bool removeFromIndex(string doc_ID) {
+bool removeFromIndex(const string& doc_ID) {
     // Step 1: Connect to the database and collection
     string connect = "mongodb+srv://dyamiwatsonjr:LSPTTeamx@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT";
     mongocxx::client dbClient = mongocxx::client{mongocxx::uri{connect}};
@@ -181,7 +197,7 @@ bool removeFromIndex(string doc_ID) {
     
 }
 
-bool updateIndex(string doc_ID) {
+bool updateIndex(const string& doc_ID) {
     try{
         // Attempts to remove data and if no errors occur re add the document
         bool remove = removeFromIndex(doc_ID);
@@ -193,4 +209,78 @@ bool updateIndex(string doc_ID) {
         cerr << "Error: " << e.what() << endl;
         return false;
     }
+}
+
+
+auto getDocsFromIndex(const string& index_ID) {
+    // Step 1: Validate Input
+    if (index_ID.empty()) {
+        cerr << "Invalid input: index_ID is empty." << endl;
+        return bsoncxx::v_noabi::document::view();
+    }
+    mongocxx::client dbClient{mongocxx::uri{"mongodb+srv://dyamiwatsonjr:LSPTTeamx@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT"}};
+    
+    // Connect to database and collection
+    auto db = dbClient["IndexingDB"];
+    auto indexTable = db["indextable"];
+
+    try {
+        // Step 2: Retrieve Documents by Index ID
+        // Query for the specified index_ID
+        auto query = bsoncxx::builder::stream::document{} << "index" << index_ID << bsoncxx::builder::stream::finalize;
+        auto result = indexTable.find_one(query.view());
+        auto data = result->view();
+        return data;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return bsoncxx::v_noabi::document::view(); // Return empty JSON on error
+    }
+}
+
+vector<int> getDocLengths(){
+    // query database for all doc lengths
+    string connect = "mongodb+srv://dyamiwatsonjr:LSPTTeamx@lspt.xq5ap.mongodb.net/?retryWrites=true&w=majority&appName=LSPT";
+    mongocxx::client dbClient = mongocxx::client{mongocxx::uri{connect}};
+    auto db = dbClient["IndexingDB"];
+    auto metadata = db["metadata"];
+
+    // Query the collection
+    auto cursor = metadata.find({});
+
+    // Vector to store the lengths
+    std::vector<int> document_lengths;
+
+    // Iterate through the results
+    for (const auto& doc : cursor) {
+        if (doc["total_length"].type() == bsoncxx::type::k_int32) {
+            document_lengths.push_back(doc["total_length"].get_int32().value);
+        } else if (doc["total_length"].type() == bsoncxx::type::k_int64) {
+            document_lengths.push_back(static_cast<int>(doc["total_length"].get_int64().value));
+        } else {
+            std::cerr << "Unexpected data type for 'total_length' in document: " << bsoncxx::to_json(doc) << std::endl;
+        }
+    }
+
+    return document_lengths;
+}
+
+int calcAvgLength(){
+
+    std::vector <int> total_lengths = getDocLengths ();
+    
+    int sum_lengths = 0;
+    for (int i = 0; i < total_lengths.size(); i++){
+        sum_lengths += total_lengths[i];
+    }
+
+    int num_docs = total_lengths.size();
+    int average_len = sum_lengths / num_docs;
+
+
+    return average_len;
+}
+
+vector<int> getDocumentMetaData(const string& doc_ID) {
+    return getDocLengths();
 }
