@@ -1,12 +1,11 @@
 // database.h
-
 #ifndef DATABASE_H // Include guard
 #define DATABASE_H
 
+#include <string>
 #include <mongocxx/client.hpp>
 #include <mongocxx/instance.hpp>
 #include <bsoncxx/json.hpp>
-#include <mongocxx/uri.hpp>
 #include <bsoncxx/builder/stream/document.hpp>
 #include <iostream>
 using namespace std;
@@ -33,24 +32,52 @@ using namespace std;
 *   Example Usages:
 *       addIndex(IndexingClient, "cat", "1234", 5, {1,6,12,25,80})
 */
-bool addIndex(string dbConnectionString, string index, string docId, int frequency, int positions);
+bool addIndex(string dbConnectionString, string index, string docId, string frequency, string positions);
 
 /* 
 *   Function Name:
-*       removeDoc
+*       addToIndex
 *   Description: 
-*       Attempts to remove all occurence of a document id in the database
+*       Attempts to add all information from the given docid to the index.
 *   Parameters:
-*       dbClient - auto - a database client object corresponding to the connected database
-*       docId - the document we want to remove
+*       doc_ID - stores the document id we want to add
 *   Returns:
-*       None
+*       true on a successful add otherwise false
 *   Side Effects:
-*       the indexTable in the database will be updated no longer containing the document information with DocId
+*       the indexTable in the database will be updated with the information realting to the doc_ID
 *   Example Usages:
-*       addIndex(IndexingClient, "cat", "1234", 5, {1,6,12,25,80})
+*       addToIndex("1234") = true
 */
-void removeDoc(auto dbClient, string docId);
-
+bool addToIndex(string doc_ID);
+/* 
+*   Function Name:
+*       removeFromIndex
+*   Description: 
+*       Attempts to remove all information from the given docid from the index.
+*   Parameters:
+*       doc_ID - stores the document id we want to remove
+*   Returns:
+*       true as long as no errors occured otherwise false
+*   Side Effects:
+*       the indexTable in the database will be updated with all information realting to the doc_ID removed
+*   Example Usages:
+*       removeFromIndex("1234") = true
+*/
+bool removeFromIndex(string doc_ID);
+/* 
+*   Function Name:
+*       updateIndex
+*   Description: 
+*       Attempts to update information from the given docid to the index.
+*   Parameters:
+*       doc_ID - stores the document id we want to update
+*   Returns:
+*       true as long as no errors occured and information was added
+*   Side Effects:
+*       the indexTable in the database will be updated with the information realting to the doc_ID
+*   Example Usages:
+*       updateIndex("1234") = true
+*/
+bool updateIndex(string doc_ID);
 #endif // DATABASE_H
 
