@@ -1,5 +1,5 @@
 #include "crow.h"
-#include "func.h"
+#include "database.h"
 #include <iostream>
 #include <unordered_map>
 #include <vector>
@@ -35,8 +35,8 @@ int main() {
             std::string operation = json_body["operation"].s();
             std::string timestamp = json_body["timestamp"].s();
 
-            // Call the pingIndex function from func.cpp
-            bool success = true;//pingIndex(doc_ID, operation, timestamp);
+            // Call the pingIndex function from database.cpp
+            bool success = pingIndex(doc_ID, operation);
 
             {
                 std::lock_guard<std::mutex> lock(data_mutex);
@@ -54,8 +54,7 @@ int main() {
                 response_body["received_timestamp"] = timestamp;
                 response_body["message"] = "Ping operation processed successfully";
                 
-                return crow::response(202, response_body);
-                //return crow::response(200, response_body);
+                return crow::response(200, response_body);
             }
 
         }

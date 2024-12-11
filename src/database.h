@@ -12,6 +12,22 @@ using namespace std;
 
 /* 
 *   Function Name:
+*       pingIndex
+*   Description: 
+*       Calls the associated function
+*   Parameters:
+*       docId - string - the document we need to operate on 
+*       operation - string - the operation we will complete, must be "add", "remove", or "update"
+*   Returns:
+*       true on successful operation else false
+*   Side Effects:
+*       the database will be modified based on the operation
+*   Example Usages:
+*       pingIndex("1234", "add");
+*/
+bool pingIndex(string doc_ID, string operation);
+/* 
+*   Function Name:
 *       addIndex
 *   Description: 
 *       Attempts to create a link between a document and an index. If a link between the 

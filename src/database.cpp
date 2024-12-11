@@ -8,6 +8,18 @@
 
 using namespace std;
 
+bool pingIndex(string doc_ID, string operation){
+    if(operation == "add"){
+        return addToIndex(doc_ID);
+    } else if (operation == "remove"){
+        return removeFromIndex(doc_ID);
+    } else if (operation == "update"){
+        return updateIndex(doc_ID);
+    } else {
+        return false;
+    }
+}
+
 bool addIndexToDatabase(string dbConnectionString, string index, string docId, string frequency, string position){
     // Step 1: Query to find the document with the given index and DocId
     mongocxx::client dbClient = mongocxx::client{mongocxx::uri{dbConnectionString}};
